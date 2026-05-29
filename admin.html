@@ -1,181 +1,338 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Ujian - Guru</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Inter", sans-serif;
-      }
-      body {
-        background: #f0f4f8;
-        color: #1e293b;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      .header {
-        background: #1e293b;
-        color: white;
-        padding: 20px;
-        border-radius: 16px;
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .header h1 {
-        font-size: 20px;
-      }
-      .stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 12px;
-        margin-bottom: 20px;
-      }
-      .stat-card {
-        background: white;
-        padding: 16px;
-        border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      }
-      .stat-card .num {
-        font-size: 24px;
-        font-weight: 800;
-        color: #2563eb;
-      }
-      .stat-card .label {
-        font-size: 12px;
-        color: #64748b;
-        margin-top: 4px;
-      }
-      table {
-        width: 100%;
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      }
-      th,
-      td {
-        padding: 12px 16px;
-        text-align: left;
-        border-bottom: 1px solid #e2e8f0;
-      }
-      th {
-        background: #f8fafc;
-        font-weight: 600;
-        font-size: 13px;
-      }
-      td {
-        font-size: 14px;
-      }
-      .status {
-        padding: 4px 8px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 600;
-      }
-      .status.active {
-        background: #dcfce7;
-        color: #16a34a;
-      }
-      .status.blocked {
-        background: #fee2e2;
-        color: #dc2626;
-      }
-      .btn-unblock {
-        background: #2563eb;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 600;
-      }
-      .btn-unblock:hover {
-        background: #1d4ed8;
-      }
-      .search-box {
-        margin-bottom: 16px;
-        display: flex;
-        gap: 10px;
-      }
-      .search-box input {
-        flex: 1;
-        padding: 10px;
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 14px;
-      }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #f0f4f8; color: #1e293b; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .header { background: #1e293b; color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .header h1 { font-size: 20px; font-weight: 700; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 16px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .stat-card .num { font-size: 24px; font-weight: 800; color: #2563eb; }
+        .stat-card .num.blocked { color: #dc2626; }
+        .stat-card .label { font-size: 12px; color: #64748b; margin-top: 4px; }
+        .search-box { margin-bottom: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .search-box input { flex: 1; min-width: 200px; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: 0.2s; }
+        .search-box input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .table-wrapper { overflow-x: auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        table { width: 100%; background: white; border-collapse: collapse; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; }
+        td { font-size: 14px; }
+        tr:hover { background: #f8fafc; }
+        .status { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
+        .status.active { background: #dcfce7; color: #16a34a; }
+        .status.blocked { background: #fee2e2; color: #dc2626; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .btn-unblock { background: #2563eb; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; }
+        .btn-unblock:hover { background: #1d4ed8; transform: translateY(-1px); }
+        .btn-unblock:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.5; transform: none; }
+        .empty-state { text-align: center; padding: 40px; color: #64748b; }
+        .empty-state span { font-size: 40px; display: block; margin-bottom: 10px; }
+        .debug-info { background: #fef3c7; border: 1px solid #fbbf24; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 12px; display: flex; align-items: center; gap: 8px; }
+        .debug-info.success { background: #dcfce7; border-color: #16a34a; color: #166534; }
+        .debug-info.error { background: #fee2e2; border-color: #dc2626; color: #991b1b; }
+        .footer { text-align: center; padding: 20px; color: #64748b; font-size: 12px; }
+        .refresh-btn { background: #64748b; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-left: 10px; }
+        .refresh-btn:hover { background: #475569; }
+        @media (max-width: 640px) {
+            th, td { padding: 10px 8px; font-size: 13px; }
+            .btn-unblock { padding: 4px 10px; font-size: 11px; }
+            .header { flex-direction: column; text-align: center; }
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <div class="header">
-        <h1>👨‍🏫 Dashboard Admin Ujian</h1>
-        <span>🕒 <span id="clock"></span></span>
-      </div>
-      <div class="stats">
-        <div class="stat-card">
-          <div class="num" id="total">0</div>
-          <div class="label">Total Siswa</div>
+        <div class="header">
+            <h1>👨‍🏫 Dashboard Admin Ujian</h1>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span>🕒 <strong id="clock">-</strong></span>
+                <button class="refresh-btn" onclick="forceRefresh()">🔄 Refresh</button>
+            </div>
         </div>
-        <div class="stat-card">
-          <div class="num" id="active">0</div>
-          <div class="label">Sedang Ujian</div>
+
+        <!-- Debug/Status Info -->
+        <div id="debugInfo" class="debug-info">
+            <span>🔍</span> <span id="debugText">Connecting to Firebase...</span>
         </div>
-        <div class="stat-card">
-          <div class="num" id="blocked" style="color: #dc2626">0</div>
-          <div class="label">Diblokir</div>
+        
+        <!-- Statistics Cards -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="num" id="total">0</div>
+                <div class="label">Total Siswa</div>
+            </div>
+            <div class="stat-card">
+                <div class="num" id="active">0</div>
+                <div class="label">Sedang Ujian</div>
+            </div>
+            <div class="stat-card">
+                <div class="num blocked" id="blocked">0</div>
+                <div class="label">Diblokir ⚠️</div>
+            </div>
         </div>
-      </div>
-      <div class="search-box">
-        <input
-          type="text"
-          id="search"
-          placeholder="🔍 Cari nama/kelas..."
-          oninput="filterTable()"
-        />
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Nama</th>
-            <th>Kelas</th>
-            <th>Absen</th>
-            <th>Pelanggaran</th>
-            <th>Status</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="studentTable"></tbody>
-      </table>
+        
+        <!-- Search Box -->
+        <div class="search-box">
+            <input type="text" id="search" placeholder="🔍 Cari nama atau kelas..." oninput="filterTable()">
+        </div>
+        
+        <!-- Student Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Absen</th>
+                        <th>Pelanggaran</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTable">
+                    <tr><td colspan="6" class="empty-state"><span>⏳</span>Menunggu siswa mulai ujian...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>🔄 Update otomatis • Terakhir: <span id="lastUpdate">-</span></p>
+            <p style="margin-top: 5px;">💡 Klik "🔓 Buka" untuk meng-unblock siswa</p>
+        </div>
     </div>
+
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
     <script>
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-      const firebaseConfig = {
-        apiKey: "AIzaSyAF6yk93vlkimK8jIz2yw8y_3JgSd3GI08",
-        authDomain: "ujianonline-b5d6f.firebaseapp.com",
-        projectId: "ujianonline-b5d6f",
-        storageBucket: "ujianonline-b5d6f.firebasestorage.app",
-        messagingSenderId: "485416468855",
-        appId: "1:485416468855:web:a6bacc4632d1cf59eaa172",
-        measurementId: "G-MN37CV5DSZ",
-      };
+        // ==========================================
+        // 🔑 FIREBASE CONFIG
+        // PASTIKAN SAMA PERSIS DENGAN siswa.html
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAF6yk93vlkimK8jIz2yw8y_3JgSd3GI08",
+            authDomain: "ujianonline-b5d6f.firebaseapp.com",
+            databaseURL: "https://ujianonline-b5d6f-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ujianonline-b5d6f",
+            storageBucket: "ujianonline-b5d6f.firebasestorage.app",
+            messagingSenderId: "485416468855",
+            appId: "1:485416468855:web:a6bacc4632d1cf59eaa172",
+            measurementId: "G-MN37CV5DSZ"
+        };
+
+        // ==========================================
+        // INITIALIZE
+        // ==========================================
+        let db, allStudents = {}, debugEl, debugText;
+
+        function init() {
+            debugEl = document.getElementById('debugInfo');
+            debugText = document.getElementById('debugText');
+
+            try {
+                // Initialize Firebase
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
+
+                // Update UI: Connected
+                updateDebug('✅ Connected! Listening to /exams...', 'success');
+                console.log('✅ Firebase initialized');
+
+                // Start clock
+                startClock();
+
+                // Start real-time listener
+                startListener();
+
+            } catch (error) {
+                console.error('❌ Init error:', error);
+                updateDebug(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // ==========================================
+        // CLOCK & TIME
+        // ==========================================
+        function startClock() {
+            function update() {
+                const now = new Date();
+                document.getElementById('clock').textContent = now.toLocaleTimeString('id-ID', {
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+                document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('id-ID');
+            }
+            update();
+            setInterval(update, 1000);
+        }
+
+        // ==========================================
+        // FIREBASE REAL-TIME LISTENER
+        // ==========================================
+        function startListener() {
+            console.log('📡 Listening to exams...');
+            
+            db.ref('exams').on('value', 
+                // Success callback
+                (snap) => {
+                    console.log('📥 Data received:', snap.val());
+                    
+                    allStudents = snap.val() || {};
+                    console.log('📊 Total students:', Object.keys(allStudents).length);
+                    
+                    renderTable();
+                    updateStats();
+                    
+                    const count = Object.keys(allStudents).length;
+                    if (count > 0) {
+                        updateDebug(`✅ Active! ${count} student(s) taking exam`, 'success');
+                    }
+                },
+                // Error callback
+                (error) => {
+                    console.error('❌ Firebase error:', error);
+                    updateDebug(`❌ Error: ${error.message}. Cek Firebase Rules!`, 'error');
+                }
+            );
+        }
+
+        // ==========================================
+        // RENDER TABLE
+        // ==========================================
+        function renderTable() {
+            const tbody = document.getElementById('studentTable');
+            const search = document.getElementById('search').value.toLowerCase();
+            
+            // Filter data
+            const filtered = Object.entries(allStudents).filter(([id, data]) => {
+                if (!data || !data.name) return false;
+                const matchSearch = !search || 
+                    data.name.toLowerCase().includes(search) || 
+                    (data.kelas && data.kelas.toLowerCase().includes(search));
+                return matchSearch;
+            });
+
+            // Empty state
+            if (filtered.length === 0) {
+                const msg = Object.keys(allStudents).length === 0 
+                    ? '⏳ Menunggu siswa mulai ujian...' 
+                    : '📭 Tidak ada siswa yang sesuai pencarian';
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><span>${msg.includes('Menunggu') ? '⏳' : '📭'}</span>${msg}</td></tr>`;
+                return;
+            }
+
+            // Render rows
+            tbody.innerHTML = filtered.map(([id, data]) => {
+                const isBlocked = data.isBlocked || data.status === 'blocked';
+                const violationColor = (data.violations || 0) > 0 ? '#dc2626' : 'inherit';
+                const statusClass = isBlocked ? 'blocked' : 'active';
+                const statusText = isBlocked ? 'BLOCKED' : 'ACTIVE';
+                
+                return `
+                    <tr>
+                        <td><strong>${escapeHtml(data.name)}</strong></td>
+                        <td>${escapeHtml(data.kelas || '-')}</td>
+                        <td>${escapeHtml(data.number || '-')}</td>
+                        <td style="font-weight:600; color:${violationColor}">
+                            ${data.violations || 0}
+                            ${data.lastViolation ? `<div style="font-size:10px; color:#64748b; margin-top:2px;">"${escapeHtml(data.lastViolation)}"</div>` : ''}
+                        </td>
+                        <td><span class="status ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <button class="btn-unblock" onclick="unblock('${id}', '${escapeHtml(data.name)}')" 
+                                ${!isBlocked ? 'disabled' : ''}>
+                                🔓 Buka
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // UPDATE STATS
+        // ==========================================
+        function updateStats() {
+            const students = Object.values(allStudents).filter(s => s && s.name);
+            document.getElementById('total').textContent = students.length;
+            document.getElementById('active').textContent = students.filter(s => s.status === 'active' && !s.isBlocked).length;
+            document.getElementById('blocked').textContent = students.filter(s => s.status === 'blocked' || s.isBlocked).length;
+        }
+
+        // ==========================================
+        // UNBLOCK FUNCTION
+        // ==========================================
+        window.unblock = function(id, name) {
+            if (!confirm(`Buka blokir untuk ${name}?`)) return;
+            
+            updateDebug(`🔓 Membuka blokir ${name}...`, 'success');
+            
+            db.ref(`exams/${id}`).update({ 
+                isBlocked: false, 
+                status: 'active',
+                unblockedAt: new Date().toISOString()
+            })
+            .then(() => {
+                alert(`✅ ${name} berhasil dibuka blokirnya!`);
+                updateDebug(`✅ ${name} unblocked`, 'success');
+            })
+            .catch(err => {
+                alert(`❌ Gagal: ${err.message}`);
+                updateDebug(`❌ Error: ${err.message}`, 'error');
+                console.error('Unblock error:', err);
+            });
+        };
+
+        // ==========================================
+        // SEARCH/FILTER
+        // ==========================================
+        window.filterTable = function() {
+            renderTable();
+        };
+
+        // ==========================================
+        // FORCE REFRESH
+        // ==========================================
+        window.forceRefresh = function() {
+            updateDebug('🔄 Refreshing data...', 'success');
+            db.ref('exams').once('value')
+                .then(snap => {
+                    allStudents = snap.val() || {};
+                    renderTable();
+                    updateStats();
+                    updateDebug('✅ Data refreshed', 'success');
+                })
+                .catch(err => {
+                    updateDebug(`❌ Refresh error: ${err.message}`, 'error');
+                });
+        };
+
+        // ==========================================
+        // UTILITIES
+        // ==========================================
+        function updateDebug(message, type) {
+            debugEl.className = `debug-info ${type}`;
+            debugText.textContent = message;
+            console.log(`[DEBUG] ${message}`);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // ==========================================
+        // START APP
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', init);
     </script>
-  </body>
+</body>
 </html>

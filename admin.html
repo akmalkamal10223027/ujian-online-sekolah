@@ -8,19 +8,30 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: #f0f4f8; color: #1e293b; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .header { background: #1e293b; color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .header h1 { font-size: 20px; font-weight: 700; }
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 16px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .stat-card .num { font-size: 24px; font-weight: 800; color: #2563eb; }
         .stat-card .num.blocked { color: #dc2626; }
+        .stat-card .num.warning { color: #f59e0b; }
         .stat-card .label { font-size: 12px; color: #64748b; margin-top: 4px; }
-        .search-box { margin-bottom: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
-        .search-box input { flex: 1; min-width: 200px; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: 0.2s; }
+        .controls { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .search-box { flex: 1; min-width: 250px; display: flex; gap: 10px; }
+        .search-box input { flex: 1; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: 0.2s; }
         .search-box input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-warning:hover { background: #d97706; }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-success:hover { background: #15803d; }
         .table-wrapper { overflow-x: auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        table { width: 100%; background: white; border-collapse: collapse; }
+        table { width: 100%; background: white; border-collapse: collapse; min-width: 800px; }
         th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
         th { background: #f8fafc; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; }
         td { font-size: 14px; }
@@ -29,20 +40,23 @@
         .status.active { background: #dcfce7; color: #16a34a; }
         .status.blocked { background: #fee2e2; color: #dc2626; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .btn-unblock { background: #2563eb; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; }
+        .btn-action { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 11px; margin: 2px; transition: 0.2s; }
+        .btn-unblock { background: #2563eb; color: white; }
         .btn-unblock:hover { background: #1d4ed8; transform: translateY(-1px); }
-        .btn-unblock:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.5; transform: none; }
+        .btn-delete { background: #dc2626; color: white; }
+        .btn-delete:hover { background: #b91c1c; transform: translateY(-1px); }
+        .btn-action:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.5; transform: none; }
         .empty-state { text-align: center; padding: 40px; color: #64748b; }
         .empty-state span { font-size: 40px; display: block; margin-bottom: 10px; }
         .debug-info { background: #fef3c7; border: 1px solid #fbbf24; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 12px; display: flex; align-items: center; gap: 8px; }
         .debug-info.success { background: #dcfce7; border-color: #16a34a; color: #166534; }
         .debug-info.error { background: #fee2e2; border-color: #dc2626; color: #991b1b; }
         .footer { text-align: center; padding: 20px; color: #64748b; font-size: 12px; }
-        .refresh-btn { background: #64748b; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-left: 10px; }
-        .refresh-btn:hover { background: #475569; }
-        @media (max-width: 640px) {
-            th, td { padding: 10px 8px; font-size: 13px; }
-            .btn-unblock { padding: 4px 10px; font-size: 11px; }
+        .violation-text { font-size: 11px; color: #64748b; margin-top: 4px; font-style: italic; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .duplicate-badge { background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-left: 6px; }
+        @media (max-width: 768px) {
+            th, td { padding: 8px 10px; font-size: 13px; }
+            .btn-action { padding: 4px 8px; font-size: 10px; }
             .header { flex-direction: column; text-align: center; }
         }
     </style>
@@ -53,7 +67,7 @@
             <h1>👨‍🏫 Dashboard Admin Ujian</h1>
             <div style="display: flex; align-items: center; gap: 10px;">
                 <span>🕒 <strong id="clock">-</strong></span>
-                <button class="refresh-btn" onclick="forceRefresh()">🔄 Refresh</button>
+                <button class="btn btn-primary" onclick="forceRefresh()">🔄 Refresh</button>
             </div>
         </div>
 
@@ -76,11 +90,20 @@
                 <div class="num blocked" id="blocked">0</div>
                 <div class="label">Diblokir ⚠️</div>
             </div>
+            <div class="stat-card">
+                <div class="num warning" id="duplicates">0</div>
+                <div class="label">Duplikat</div>
+            </div>
         </div>
         
-        <!-- Search Box -->
-        <div class="search-box">
-            <input type="text" id="search" placeholder="🔍 Cari nama atau kelas..." oninput="filterTable()">
+        <!-- Controls -->
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="search" placeholder="🔍 Cari nama atau kelas..." oninput="filterTable()">
+            </div>
+            <button class="btn btn-warning" onclick="showDuplicates()">🔍 Lihat Duplikat</button>
+            <button class="btn btn-danger" onclick="deleteAllDuplicates()">🗑️ Hapus Semua Duplikat</button>
+            <button class="btn btn-success" onclick="exportData()">📥 Export CSV</button>
         </div>
         
         <!-- Student Table -->
@@ -93,18 +116,19 @@
                         <th>Absen</th>
                         <th>Pelanggaran</th>
                         <th>Status</th>
+                        <th>Waktu</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="studentTable">
-                    <tr><td colspan="6" class="empty-state"><span>⏳</span>Menunggu siswa mulai ujian...</td></tr>
+                    <tr><td colspan="7" class="empty-state"><span>⏳</span>Menunggu siswa mulai ujian...</td></tr>
                 </tbody>
             </table>
         </div>
 
         <div class="footer">
             <p>🔄 Update otomatis • Terakhir: <span id="lastUpdate">-</span></p>
-            <p style="margin-top: 5px;">💡 Klik "🔓 Buka" untuk meng-unblock siswa</p>
+            <p style="margin-top: 5px;">💡 Klik "🔓 Buka" untuk unblock • Klik "🗑️" untuk hapus data</p>
         </div>
     </div>
 
@@ -115,7 +139,6 @@
     <script>
         // ==========================================
         // 🔑 FIREBASE CONFIG
-        // PASTIKAN SAMA PERSIS DENGAN siswa.html
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyAF6yk93vlkimK8jIz2yw8y_3JgSd3GI08",
@@ -138,20 +161,12 @@
             debugText = document.getElementById('debugText');
 
             try {
-                // Initialize Firebase
                 firebase.initializeApp(firebaseConfig);
                 db = firebase.database();
-
-                // Update UI: Connected
                 updateDebug('✅ Connected! Listening to /exams...', 'success');
                 console.log('✅ Firebase initialized');
-
-                // Start clock
                 startClock();
-
-                // Start real-time listener
                 startListener();
-
             } catch (error) {
                 console.error('❌ Init error:', error);
                 updateDebug(`❌ Error: ${error.message}`, 'error');
@@ -159,7 +174,7 @@
         }
 
         // ==========================================
-        // CLOCK & TIME
+        // CLOCK
         // ==========================================
         function startClock() {
             function update() {
@@ -174,33 +189,56 @@
         }
 
         // ==========================================
-        // FIREBASE REAL-TIME LISTENER
+        // FIREBASE LISTENER
         // ==========================================
         function startListener() {
             console.log('📡 Listening to exams...');
             
             db.ref('exams').on('value', 
-                // Success callback
                 (snap) => {
                     console.log('📥 Data received:', snap.val());
-                    
                     allStudents = snap.val() || {};
                     console.log('📊 Total students:', Object.keys(allStudents).length);
                     
                     renderTable();
                     updateStats();
+                    checkDuplicates();
                     
                     const count = Object.keys(allStudents).length;
                     if (count > 0) {
                         updateDebug(`✅ Active! ${count} student(s) taking exam`, 'success');
                     }
                 },
-                // Error callback
                 (error) => {
                     console.error('❌ Firebase error:', error);
                     updateDebug(`❌ Error: ${error.message}. Cek Firebase Rules!`, 'error');
                 }
             );
+        }
+
+        // ==========================================
+        // CHECK DUPLICATES
+        // ==========================================
+        function checkDuplicates() {
+            const students = Object.values(allStudents).filter(s => s && s.name);
+            const nameClassMap = {};
+            let dupCount = 0;
+
+            students.forEach((student, index) => {
+                const key = `${student.name.toLowerCase()}_${student.kelas}_${student.number}`;
+                if (!nameClassMap[key]) {
+                    nameClassMap[key] = [];
+                }
+                nameClassMap[key].push(student);
+            });
+
+            Object.values(nameClassMap).forEach(group => {
+                if (group.length > 1) {
+                    dupCount += group.length - 1; // Count duplicates (exclude first)
+                }
+            });
+
+            document.getElementById('duplicates').textContent = dupCount;
         }
 
         // ==========================================
@@ -210,7 +248,6 @@
             const tbody = document.getElementById('studentTable');
             const search = document.getElementById('search').value.toLowerCase();
             
-            // Filter data
             const filtered = Object.entries(allStudents).filter(([id, data]) => {
                 if (!data || !data.name) return false;
                 const matchSearch = !search || 
@@ -219,36 +256,59 @@
                 return matchSearch;
             });
 
-            // Empty state
             if (filtered.length === 0) {
                 const msg = Object.keys(allStudents).length === 0 
                     ? '⏳ Menunggu siswa mulai ujian...' 
                     : '📭 Tidak ada siswa yang sesuai pencarian';
-                tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><span>${msg.includes('Menunggu') ? '⏳' : '📭'}</span>${msg}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><span>${msg.includes('Menunggu') ? '⏳' : '📭'}</span>${msg}</td></tr>`;
                 return;
             }
 
-            // Render rows
+            // Sort by startTime (newest first)
+            filtered.sort((a, b) => {
+                const timeA = a[1].startTime ? new Date(a[1].startTime).getTime() : 0;
+                const timeB = b[1].startTime ? new Date(b[1].startTime).getTime() : 0;
+                return timeB - timeA;
+            });
+
+            // Check for duplicates
+            const nameClassCount = {};
+            filtered.forEach(([id, data]) => {
+                const key = `${data.name.toLowerCase()}_${data.kelas}_${data.number}`;
+                nameClassCount[key] = (nameClassCount[key] || 0) + 1;
+            });
+
             tbody.innerHTML = filtered.map(([id, data]) => {
                 const isBlocked = data.isBlocked || data.status === 'blocked';
                 const violationColor = (data.violations || 0) > 0 ? '#dc2626' : 'inherit';
                 const statusClass = isBlocked ? 'blocked' : 'active';
                 const statusText = isBlocked ? 'BLOCKED' : 'ACTIVE';
                 
+                const key = `${data.name.toLowerCase()}_${data.kelas}_${data.number}`;
+                const isDuplicate = nameClassCount[key] > 1;
+                const duplicateBadge = isDuplicate ? '<span class="duplicate-badge">DUPLIKAT</span>' : '';
+                
+                const startTime = data.startTime ? new Date(data.startTime).toLocaleString('id-ID') : '-';
+
                 return `
                     <tr>
-                        <td><strong>${escapeHtml(data.name)}</strong></td>
+                        <td><strong>${escapeHtml(data.name)}</strong>${duplicateBadge}</td>
                         <td>${escapeHtml(data.kelas || '-')}</td>
                         <td>${escapeHtml(data.number || '-')}</td>
                         <td style="font-weight:600; color:${violationColor}">
                             ${data.violations || 0}
-                            ${data.lastViolation ? `<div style="font-size:10px; color:#64748b; margin-top:2px;">"${escapeHtml(data.lastViolation)}"</div>` : ''}
+                            ${data.lastViolation ? `<div class="violation-text">"${escapeHtml(data.lastViolation)}"</div>` : ''}
                         </td>
                         <td><span class="status ${statusClass}">${statusText}</span></td>
+                        <td style="font-size:11px; color:#64748b">${startTime}</td>
                         <td>
-                            <button class="btn-unblock" onclick="unblock('${id}', '${escapeHtml(data.name)}')" 
-                                ${!isBlocked ? 'disabled' : ''}>
+                            <button class="btn-action btn-unblock" onclick="unblock('${id}', '${escapeHtml(data.name)}')" 
+                                ${!isBlocked ? 'disabled' : ''} title="Buka blokir">
                                 🔓 Buka
+                            </button>
+                            <button class="btn-action btn-delete" onclick="deleteStudent('${id}', '${escapeHtml(data.name)}')" 
+                                title="Hapus data siswa">
+                                🗑️ Hapus
                             </button>
                         </td>
                     </tr>
@@ -280,14 +340,147 @@
                 unblockedAt: new Date().toISOString()
             })
             .then(() => {
-                alert(`✅ ${name} berhasil dibuka blokirnya!`);
                 updateDebug(`✅ ${name} unblocked`, 'success');
             })
             .catch(err => {
-                alert(`❌ Gagal: ${err.message}`);
                 updateDebug(`❌ Error: ${err.message}`, 'error');
                 console.error('Unblock error:', err);
             });
+        };
+
+        // ==========================================
+        // DELETE SINGLE STUDENT
+        // ==========================================
+        window.deleteStudent = function(id, name) {
+            if (!confirm(`⚠️ Yakin ingin menghapus data ${name}?\n\nData yang dihapus tidak bisa dikembalikan!`)) return;
+            
+            updateDebug(`🗑️ Menghapus ${name}...`, 'success');
+            
+            db.ref(`exams/${id}`).remove()
+            .then(() => {
+                updateDebug(`✅ ${name} berhasil dihapus`, 'success');
+                alert(`✅ Data ${name} berhasil dihapus!`);
+            })
+            .catch(err => {
+                updateDebug(`❌ Gagal menghapus: ${err.message}`, 'error');
+                alert(`❌ Gagal: ${err.message}`);
+                console.error('Delete error:', err);
+            });
+        };
+
+        // ==========================================
+        // SHOW DUPLICATES
+        // ==========================================
+        window.showDuplicates = function() {
+            const searchInput = document.getElementById('search');
+            const students = Object.values(allStudents).filter(s => s && s.name);
+            const nameClassMap = {};
+
+            students.forEach(student => {
+                const key = `${student.name.toLowerCase()}_${student.kelas}_${student.number}`;
+                if (!nameClassMap[key]) {
+                    nameClassMap[key] = [];
+                }
+                nameClassMap[key].push(student);
+            });
+
+            const duplicates = Object.values(nameClassMap).filter(group => group.length > 1);
+            
+            if (duplicates.length === 0) {
+                alert('✅ Tidak ada data duplikat!');
+                searchInput.value = '';
+                filterTable();
+                return;
+            }
+
+            const dupNames = duplicates.map(group => `${group[0].name} (${group[0].kelas} - ${group[0].number}): ${group.length} data`).join('\n');
+            alert(`📊 Ditemukan ${duplicates.length} data duplikat:\n\n${dupNames}`);
+            
+            // Filter to show only duplicates
+            const firstDup = duplicates[0][0];
+            searchInput.value = firstDup.name;
+            filterTable();
+        };
+
+        // ==========================================
+        // DELETE ALL DUPLICATES
+        // ==========================================
+        window.deleteAllDuplicates = function() {
+            const students = Object.values(allStudents).filter(s => s && s.name);
+            const nameClassMap = {};
+
+            students.forEach((student, index) => {
+                const key = `${student.name.toLowerCase()}_${student.kelas}_${student.number}`;
+                if (!nameClassMap[key]) {
+                    nameClassMap[key] = [];
+                }
+                nameClassMap[key].push({id: Object.keys(allStudents)[index], ...student});
+            });
+
+            const duplicates = Object.values(nameClassMap).filter(group => group.length > 1);
+            
+            if (duplicates.length === 0) {
+                alert('✅ Tidak ada data duplikat!');
+                return;
+            }
+
+            let totalDup = 0;
+            duplicates.forEach(group => {
+                totalDup += group.length - 1; // Exclude first (keep original)
+            });
+
+            if (!confirm(`⚠️ Yakin ingin menghapus ${totalDup} data duplikat?\n\nData asli akan tetap dipertahankan.`)) return;
+
+            updateDebug(`🗑️ Menghapus ${totalDup} data duplikat...`, 'success');
+
+            // Delete duplicates (keep first occurrence)
+            const deletePromises = [];
+            duplicates.forEach(group => {
+                // Skip first (keep it), delete the rest
+                for (let i = 1; i < group.length; i++) {
+                    deletePromises.push(db.ref(`exams/${group[i].id}`).remove());
+                }
+            });
+
+            Promise.all(deletePromises)
+            .then(() => {
+                updateDebug(`✅ Berhasil menghapus ${totalDup} data duplikat`, 'success');
+                alert(`✅ Berhasil menghapus ${totalDup} data duplikat!`);
+            })
+            .catch(err => {
+                updateDebug(`❌ Gagal: ${err.message}`, 'error');
+                alert(`❌ Gagal: ${err.message}`);
+                console.error('Delete duplicates error:', err);
+            });
+        };
+
+        // ==========================================
+        // EXPORT TO CSV
+        // ==========================================
+        window.exportData = function() {
+            const students = Object.values(allStudents).filter(s => s && s.name);
+            
+            if (students.length === 0) {
+                alert('📭 Tidak ada data untuk diexport!');
+                return;
+            }
+
+            let csv = 'NAMA,KELAS,ABSEN,PELANGGARAN,STATUS,START TIME\n';
+            students.forEach(s => {
+                const status = s.isBlocked || s.status === 'blocked' ? 'BLOCKED' : 'ACTIVE';
+                const startTime = s.startTime ? new Date(s.startTime).toLocaleString('id-ID') : '-';
+                csv += `"${s.name}","${s.kelas}","${s.number}",${s.violations || 0},${status},"${startTime}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `data-ujian-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            updateDebug(`📥 Export ${students.length} data ke CSV`, 'success');
         };
 
         // ==========================================
@@ -307,6 +500,7 @@
                     allStudents = snap.val() || {};
                     renderTable();
                     updateStats();
+                    checkDuplicates();
                     updateDebug('✅ Data refreshed', 'success');
                 })
                 .catch(err => {

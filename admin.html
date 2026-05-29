@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Ujian - Guru</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+      body {
+        background: #f0f4f8;
+        color: #1e293b;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background: #1e293b;
+        color: white;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .header h1 {
+        font-size: 20px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .stat-card {
+        background: white;
+        padding: 16px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+      .stat-card .num {
+        font-size: 24px;
+        font-weight: 800;
+        color: #2563eb;
+      }
+      .stat-card .label {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 4px;
+      }
+      table {
+        width: 100%;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+      th,
+      td {
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      th {
+        background: #f8fafc;
+        font-weight: 600;
+        font-size: 13px;
+      }
+      td {
+        font-size: 14px;
+      }
+      .status {
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .status.active {
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .status.blocked {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .btn-unblock {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .btn-unblock:hover {
+        background: #1d4ed8;
+      }
+      .search-box {
+        margin-bottom: 16px;
+        display: flex;
+        gap: 10px;
+      }
+      .search-box input {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>👨‍🏫 Dashboard Admin Ujian</h1>
+        <span>🕒 <span id="clock"></span></span>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="num" id="total">0</div>
+          <div class="label">Total Siswa</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="active">0</div>
+          <div class="label">Sedang Ujian</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="blocked" style="color: #dc2626">0</div>
+          <div class="label">Diblokir</div>
+        </div>
+      </div>
+      <div class="search-box">
+        <input
+          type="text"
+          id="search"
+          placeholder="🔍 Cari nama/kelas..."
+          oninput="filterTable()"
+        />
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Kelas</th>
+            <th>Absen</th>
+            <th>Pelanggaran</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="studentTable"></tbody>
+      </table>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script>
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyAF6yk93vlkimK8jIz2yw8y_3JgSd3GI08",
+        authDomain: "ujianonline-b5d6f.firebaseapp.com",
+        projectId: "ujianonline-b5d6f",
+        storageBucket: "ujianonline-b5d6f.firebasestorage.app",
+        messagingSenderId: "485416468855",
+        appId: "1:485416468855:web:a6bacc4632d1cf59eaa172",
+        measurementId: "G-MN37CV5DSZ",
+      };
+    </script>
+  </body>
+</html>
